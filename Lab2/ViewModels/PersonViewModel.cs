@@ -1,9 +1,10 @@
-﻿using Lab2.Models;
+﻿using Lab2.Exceptions;
+using Lab2.Models;
 using Lab2.Views;
 using System;
 using System.Threading;
 using System.Windows;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace Lab2.ViewModels
 {
@@ -100,18 +101,32 @@ namespace Lab2.ViewModels
         // initializes person and starts a new window
         private void Proceed()
         {
-            _person = new Person(Name, Surname, Email, BirthDate);
-            if (_person.Age > 135 || _person.BirthDate.CompareTo(DateTime.Today) > 0)
-                MessageBox.Show("Your date is incorrect. Try again!", "Error");
-            else
+            try
             {
-                InformationWindow w = new InformationWindow(this);
-                Thread.Sleep(2000);
-                w.Show();
-                if (IsBirthday)
-                {
-                    MessageBox.Show("Happy Birthday!", "Message");
-                }
+                _person = new Person(Name, Surname, Email, BirthDate);
+            } 
+            catch(InvalidEmailException e)
+            {
+                MessageBox.Show("Error occured: " + e.Message);
+                return;
+            }
+            catch(BirthDateInFutureException e)
+            {
+                MessageBox.Show("Error occured: " + e.Message);
+                return;
+            }
+            catch(BirthDateInPastException e)
+            {
+                MessageBox.Show("Error occured: " + e.Message);
+                return;
+            }
+
+            InformationWindow w = new InformationWindow(this);
+            Thread.Sleep(2000);
+            w.Show();
+            if (IsBirthday)
+            {
+                MessageBox.Show("Happy Birthday!", "Message");
             }
         }
 

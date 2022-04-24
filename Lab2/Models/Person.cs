@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Lab2.Exceptions;
+using System;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Lab2.Models
 {
     public class Person
     {
+        private static String emailRegex ="^(.+)@(.+)$";
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region Private Fields
@@ -65,6 +68,12 @@ namespace Lab2.Models
         #region Constructors
         public Person(string name, string surname, string email, DateTime birthDate)
         {
+            if (!Regex.IsMatch(email, emailRegex)) 
+                throw new InvalidEmailException("Invalid email value");
+            if (birthDate.CompareTo(DateTime.Now) > 0) 
+                throw new BirthDateInFutureException("Invalid birth date value");
+            if (birthDate.Year < 1887)
+                throw new BirthDateInPastException("Invalid birth date value");
             _name = name;
             _surname = surname;
             _email = email;
